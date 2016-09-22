@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Nimrod</title>
+		<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src="js/script.js"></script>
+		<link rel="icon" href="img/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="style/stylesheet.css">
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+	</head>
+	<body>
+		<div id="gamemode-buttons">
+			<div title="Klassik-Pyramide" name="pyramid"><img src="img/pyramid.png"></div>
+			<div title="Grid" name="block"><img src="img/grid.png"></div>
+			<div title="8-Bit Mario" name="mario"><img src="img/mario.png"></div>
+			<div title="Illuminati Confirmed" name="illuminati"><img src="img/illuminati.png"></div>
+		</div>
+		<div>
+			<label title="Extra-Info anzeigen" for="debug">
+				<input id="debug" type="checkbox" title="Zusattz-Info anzeigen"/>
+				Debug Info
+			</label>
+			<button title="Spielfeld zurücksetzen" id="resetButton" onclick="zeichnen()">RESET</button>
+		</div>
+		<br/>
+		<center><div id="status"></div></center>
+		<div id="game-wrapper"></div>
+		<div hidden id="info-box"></div>
+		<br/>
+		<h2>Nimrod</h2>
+		<p>
+			Du spielst gegen einen praktisch unschlagbaren Computer.<br>
+			Klicke auf eine leuchtende Lampe, um sie auszuschalten. Dabei werden auch alle Lampen rechts von dieser ausgeschaltet.<br>
+			Ziel des Spiels ist es, die letzte Lampe auszuschalten.
+		</p>
+	</body>
+</html>
