@@ -1,5 +1,4 @@
-/**
- * Burries the last value in the array to be the n'th last value.
+/* Burries the last value in the array to be the n'th last value.
  * Used by the Roll stack op.
  */
 Array.prototype.bury = function( n ) {
@@ -79,8 +78,9 @@ var stackOperations = [
         if (num1 != 0)
           stack.push( num2/num1 |0 )
         else {
-          return console.error( "Need to be superuser to div/0" );
+          console.error( "Need to be superuser to div/0" );
           alert( "There was a problem." );
+          return;
         } } },
     function( stack ) {
       if (stack.length >= 2) {
@@ -89,8 +89,9 @@ var stackOperations = [
         if (num1 != 0)
           stack.push( num2%num1 )
         else {
-          return console.error( "Need to be superuser to div/0" );
+          console.error( "Need to be superuser to div/0" );
           alert( "There was a problem." );
+          return;
         } } },
     function( stack ) {
       if (stack.length >= 1)
@@ -122,9 +123,12 @@ var stackOperations = [
           return; }
         if ( num1 === 0 ) return;
 
-        while ( num1 --> 0 )
-          if ( num2 > 0 ) stack.bury( num2 )
-          else stack.digUp( num2 ); } },
+        if ( num1 > 0 )
+          while ( num1 --> 0 )
+            stack.bury( num2 );
+        else
+          while ( num1++ < 0 )
+            stack.digUp( num2 ); } },
     function( stack ) { stack.push( inputBuffer.readInt() ); } ],
   [ // Char In, Int Out, Char Out
     function( stack ) { stack.push( inputBuffer.readChar() ); },
@@ -217,6 +221,7 @@ function paintOnImage( x, y, color ) {
 
 function selectColor( colorId ) {
   selectedColorId = colorId;
+  reloadColorHints();
 }
 
 function findColorBlock( _x, _y ) {
@@ -297,12 +302,12 @@ function determineNextCodel( codeBlock ) {
     ) ? curr : prev
   );
 
-  for (var i = (dP%2?edgeCodel.y:edgeCodel.x)+(dP<2||-1);
-                dP>1?i>=0:i<(dP<1?pietImage.matrix.length:pietImage.matrix[0].length);
-                dP<2?i++:i--)
-    with(dP%2?pietImage.matrix[edgeCodel.x][i]:pietImage.matrix[i][edgeCodel.y]) {
+  for (var i = (dP % 2 ? edgeCodel.y : edgeCodel.x ) + ( dP < 2 || -1 );
+                dP > 1 ? i >= 0 : i < (dP < 1 ? pietWidth : pietHeight);
+                dP < 2 ? i++ : i-- )
+    with( dP % 2 ? pietImage.matrix[edgeCodel.x][i] : pietImage.matrix[i][edgeCodel.y] ) {
       if (colorId < 18) {
-        edgeCodel = dP%2?pietImage.matrix[edgeCodel.x][i]:pietImage.matrix[i][edgeCodel.y];
+        edgeCodel = dP % 2 ? pietImage.matrix[edgeCodel.x][i] : pietImage.matrix[i][edgeCodel.y];
         break; }
       if (colorId === 19)
         passedWhite = true;
@@ -439,7 +444,93 @@ function resetExecution() {
 }
 
 function reloadColorHints() {
-  document.getElementsByTagName("td")
+  function getEls(s) {
+    return document.getElementsByClassName( s );
+  }
+  function setHint(elArr, colorId) {
+    for (var i = 0; i < elArr.length; i++) {
+      elArr[i].style.backgroundColor = pietBgColors[colorId];
+      elArr[i].style.borderBottom = "1px solid " + pietColors[colorId];
+      // elArr[i].parent.style.backgroundColor = pietColors[colorId];
+    }
+  }
+
+  var elementArrayList = [
+    "non", "psh", "pop",
+    "add", "sub", "mpl",
+    "div", "mod", "not",
+    "grt", "ptr", "swt",
+    "dup", "rol", "nbi",
+    "chi", "nbo", "cho" ].map( function(cmd) { return getEls("cmd-"+cmd); } );
+
+  for ( var i = 0; i < elementArrayList.length; i++ )
+    if (selectedColorId < 18) {
+      let _colorId = ((selectedColorId/3|0)+(i/3|0))%6*3 + (selectedColorId+i)%3
+      setHint( elementArrayList[i], _colorId );
+
+      for (var j = 0; j < elementArrayList[i].length; j++) {
+        elementArrayList[i][j].onclick = function(){selectColor( _colorId );};
+      }
+      // elementArrayList[i].onclick = function(){ selectColor( currColorId ) };
+    } else {
+      setHint( elementArrayList[i], i==0 ? selectedColorId : i );
+
+      for (j = 0; j < elementArrayList[i].length; j++) {
+        // make i not dynamic af
+        let _i = i;
+        elementArrayList[i][j].onclick = function(){selectColor( _i );};
+      }
+    }
+}
+
+function resizePietImage( newWidth, newHeight ) {
+  if ( newWidth < 1 || newHeight < 1 )
+    return console.error( "Oh hell no." );
+
+  var oldWidth = pietImage.matrix.length,
+    oldHeight = pietImage.matrix[0].length;
+
+  pietImage.width = newWidth;
+  pietImage.height = newHeight;
+
+
+  if ( newWidth > oldWidth ) {
+    pietWidth = newWidth;
+    let i = oldWidth;
+    while ( i < newWidth ) {
+      pietImage.matrix.push([]);
+
+      let j = 0;
+      while ( j < oldHeight) {
+        pietImage.matrix[i].push( new Codel( i, j, 19 ) );
+        j++;
+      }
+      i++;
+    }
+  }
+
+  if ( newWidth < oldWidth )
+    pietWidth = newWidth;
+
+
+  if ( newHeight > oldHeight ) {
+    pietHeight = newHeight;
+    let i = 0;
+    while ( i < newWidth ) {
+      let j = oldHeight;
+      while ( j < newHeight ) {
+        pietImage.matrix[i].push( new Codel( i, j, 19 ) );
+        j++;
+      }
+      i++;
+    }
+  }
+
+  if ( newHeight < oldHeight )
+    pietHeight = newHeight;
+
+
+
 }
 
 function initialize() {
@@ -477,7 +568,6 @@ function initialize() {
     domEl: document.getElementById("output-area"),
     print: function(val) {outputArea.domEl.value += String(val)}
   }
-
   window.stackArea = document.getElementById("stack-area");
   window.pietStack = [ ];
 
@@ -494,7 +584,17 @@ function initialize() {
     "#ffc0ff", "#ff00ff", "#c000c0",
     "#000000", "#ffffff"
   ];
-  window.selectedColorId = 18;
+  window.pietBgColors = [
+    "#fff0f0", "#ffd0d0", "#ffb0b0",
+    "#fffff0", "#ffffd0", "#ffffb0",
+    "#f0fff0", "#d0ffd0", "#b0ffb0",
+    "#f0ffff", "#d0ffff", "#b0ffff",
+    "#f0f0ff", "#d0d0ff", "#b0b0ff",
+    "#fff0ff", "#ffd0ff", "#ffb0ff",
+    "#b0b0b0", "#ffffff"
+  ]
+  window.selectedColorId;
+  selectColor( 18 );
   window.pietWidth = widthSetting.value;
   window.pietHeight = heightSetting.value;
   window.codelSize = codelSizeSetting.value;
@@ -511,11 +611,11 @@ function initialize() {
   window.gridCtx = gridC.getContext("2d");
 
   document.getElementById("setting-canvas_width").addEventListener("change", function(e) {
-    pietWidth = e.target.valueAsNumber;
+    resizePietImage( e.target.valueAsNumber, pietHeight );
     resetCanvas();
   });
   document.getElementById("setting-canvas_height").addEventListener("change", function(e) {
-    pietHeight = e.target.valueAsNumber;
+    resizePietImage( pietWidth, e.target.valueAsNumber );
     resetCanvas();
   });
   document.getElementById("setting-codel_size").addEventListener("change", function(e) {
@@ -523,8 +623,9 @@ function initialize() {
     resetCanvas();
   });
   document.getElementById("program-grid").addEventListener("click", function(e) {
+    console.log(e);
     var imgX = e.offsetX/codelSize |0,
-        imgY = e.offsetY/codelSize |0;
+      imgY = e.offsetY/codelSize |0;
     pietImage.matrix[imgX][imgY].colorId = selectedColorId;
     paintOnImage( imgX, imgY, pietColors[selectedColorId] );
   });
