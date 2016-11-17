@@ -38,12 +38,13 @@ document.addEventListener( "mousemove", function(e) {
 	mouse.y = e.clientY || e.pageY;
 }, false);
 
-$(document).on( "click", "#canvas", function() {
+//$(document).on( "click", "#canvas", function() {
+setInterval( function() {
 	x = mouse.x;
 	y = mouse.y;
 
 	draw();
-});
+}, 16 );
 
 $(document).on( "ready", function() {
 	setTimeout( function() {
