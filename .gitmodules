@@ -1,0 +1,18 @@
+[submodule "gallifreyan"]
+	path = gallifreyan
+	url = https://github.com/DustInCompetent/gallifreyan
+[submodule "brainfuck"]
+	path = brainfuck
+	url = https://github.com/DustInCompetent/brainfuck
+[submodule "mandelgrid"]
+	path = mandelgrid
+	url = https://github.com/DustInCompetent/mandelgrid
+[submodule "mirrors"]
+	path = mirrors
+	url = https://github.com/DustInCompetent/mirrors
+[submodule "piet"]
+	path = piet
+	url = https://github.com/DustInCompetent/piet
+[submodule "nimrod"]
+	path = nimrod
+	url = https://github.com/DustInCompetent/nimrod
