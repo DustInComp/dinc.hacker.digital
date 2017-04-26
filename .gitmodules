@@ -16,3 +16,6 @@
 [submodule "nimrod"]
 	path = nimrod
 	url = https://github.com/DustInCompetent/nimrod
+[submodule "hexknot"]
+	path = hexknot
+	url = https://github.com/DustInCompetent/hexknot.git
